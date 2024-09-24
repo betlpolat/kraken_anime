@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "833290142594",
+    "project_id": "krakenanime-6f27a",
+    "storage_bucket": "krakenanime-6f27a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:833290142594:android:383b43e2520d34dba5059b",
+        "android_client_info": {
+          "package_name": "com.example.kraken_anime"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAA6lK0ziwzVKxOdV7X6U3kHddPhUbv-og"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

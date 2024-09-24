@@ -1,1 +1,10 @@
-{}
+{
+    "anime_list": {
+        "title": "ANIMES"
+    },
+    "detail": {
+        "genres": "Genres:",
+        "episodes": "Episodes: ",
+        "characters": "Characters"
+    }
+}

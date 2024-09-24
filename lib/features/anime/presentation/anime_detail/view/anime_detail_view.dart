@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kraken_anime/core/utils/extension/string_extension.dart';
+import '../../../../../core/init/language/locale_keys.g.dart';
 import '../../../../../core/utils/extension/context_extension.dart';
 import '../../../../../core/state/base/base_state.dart';
-import '../../../../../core/widget/image/fill_image_with_color.dart';
+import '../../../../../core/widget/image/custom_network_image.dart';
 import '../../../data/models/animes.dart';
+import '../../widget/rating_star.dart';
 import '../view_model/anime_detail_state.dart';
 import '../view_model/anime_detail_view_model.dart';
 import 'mixin/anime_detail_view_mixin.dart';
@@ -35,29 +38,86 @@ class _AnimeDetailViewState extends BaseState<AnimeDetailView> with AnimeDetailV
         if (state.onLoad) {
           return Center(child: CircularProgressIndicator());
         } else if (state.onComplete) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  widget.data?.images?.jpg?.imageUrl ?? "",
-                  filterQuality: FilterQuality.high,
-                  fit: BoxFit.fill,
-                  height: 200,
-                  width: context.width,
-                  errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
-                    return const SizedBox.shrink();
-                  },
-                ),
+          return Padding(
+            padding: context.paddingLow,
+            child: SingleChildScrollView(
+              physics: AlwaysScrollableScrollPhysics(),
+              child: Column(
+                children: [
+                  Stack(
+                    children: [
+                      CustomNetworkImage(
+                        path: widget.data?.images?.jpg?.imageUrl ?? "",
+                        fit: BoxFit.fill,
+                        height: context.height / 4,
+                        width: context.width,
+                      ),
+                      Positioned(
+                        top: context.height / 4 - 40,
+                        child: Text(
+                          widget.data?.title ?? '',
+                          style: context.textTheme.headlineSmall!
+                              .copyWith(color: context.colors.background, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
+                  RatingStar(
+                    fieldScore: widget.data?.ratingScore ?? 0,
+                  ),
+                  Row(
+                    children: [
+                      Text(LocaleKeys.detail_genres.locale,
+                          style: context.textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold)),
+                      Row(children: [
+                        for (int index = 0; index < (widget.data?.genres?.length ?? 0); index++)
+                          Text(' ' + (widget.data?.genres?[index].name ?? ''))
+                      ]),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Text(LocaleKeys.detail_episodes.locale,
+                          style: context.textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold)),
+                      Text(widget.data?.episodes.toString() ?? ''),
+                    ],
+                  ),
+                  Text(widget.data?.synopsis ?? ''),
+                  Text(
+                    LocaleKeys.detail_characters.locale,
+                    style: context.textTheme.headlineMedium,
+                  ),
+                  SizedBox(
+                    height: 150,
+                    child: ListView.builder(
+                      itemCount: state.characterList?.length ?? 0,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            CustomNetworkImage(
+                              path: state.characterList?[index].character?.images?.jpg?.imageUrl ?? "",
+                              height: 120,
+                              width: 120,
+                            ),
+                            SizedBox(
+                              width: 120,
+                              child: Text(
+                                state.characterList?[index].character?.name ?? '',
+                                style: context.textTheme.titleMedium,
+                                maxLines: 1,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  )
+                ],
               ),
-              FieldScoreStars(fieldScore: widget.data?.ratingScore ?? 0),
-              Text(
-                widget.data?.score?.toString() ?? '',
-              ),
-              Text(widget.data?.synopsis ?? ''),
-              Text(state.characterList?[0].character?.name ?? ''),
-            ],
+            ),
           );
         } else {
           final error = state.errorMessage;
@@ -65,37 +125,6 @@ class _AnimeDetailViewState extends BaseState<AnimeDetailView> with AnimeDetailV
           return Text(error);
         }
       },
-    );
-  }
-}
-
-class FieldScoreStars extends StatelessWidget {
-  const FieldScoreStars({super.key, required this.fieldScore});
-  final double fieldScore;
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        for (int i = 0; i < fieldScore.toInt(); i++)
-          FillImageWithColor(
-            imageUrl: "assets/icons/star_inactive.svg",
-            fillColor: context.theme.colorScheme.tertiary,
-            percentage: 100,
-          ),
-        if ((fieldScore - fieldScore.toInt()) > 0)
-          FillImageWithColor(
-            imageUrl: "assets/icons/star_inactive.svg",
-            fillColor: context.theme.colorScheme.tertiary,
-            percentage: ((fieldScore - fieldScore.toInt()) * 100).toInt(),
-          ),
-        for (int i = 0; i < (5 - fieldScore).toInt(); i++)
-          FillImageWithColor(
-            imageUrl: "assets/icons/star_inactive.svg",
-            fillColor: context.theme.colorScheme.tertiary,
-            percentage: 0,
-          ),
-        Text(fieldScore.toStringAsFixed(1))
-      ],
     );
   }
 }

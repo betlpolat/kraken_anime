@@ -1,11 +1,9 @@
-import 'package:dio/dio.dart';
 import '../../../data/service/anime_list_service.dart';
 import 'anime_list_state.dart';
 import '../../../../../core/state/base/base_cubit.dart';
 
 class AnimeListViewModel extends BaseCubit<AnimeListState> {
   AnimeListViewModel() : super(AnimeListState());
-  final dio = Dio();
 
   /// Change loading state
   void changeLoading() {

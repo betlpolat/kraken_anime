@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kraken_anime/core/utils/extension/string_extension.dart';
+import '../../../../../core/init/language/locale_keys.g.dart';
 import '../../../../../core/utils/extension/context_extension.dart';
+import '../../../../../core/widget/image/custom_network_image.dart';
+import '../../widget/rating_star.dart';
 import 'mixin/anime_list_view_mixin.dart';
 import '../view_model/anime_list_state.dart';
 import '../view_model/anime_list_view_model.dart';
 
 import '../../../../../core/state/base/base_state.dart';
-import '../../../../../core/widget/image/fill_image_with_color.dart';
 
 class AnimeListView extends StatefulWidget {
   const AnimeListView({super.key});
@@ -22,7 +25,9 @@ class _AnimeListViewState extends BaseState<AnimeListView> with AnimeListViewMix
       create: (context) => animeListViewModel,
       child: Scaffold(
           appBar: AppBar(
-            title: Text('ANIMES'),
+            title: Text(
+              LocaleKeys.anime_list_title.locale,
+            ),
           ),
           body: _animeList()),
     );
@@ -54,19 +59,11 @@ class _AnimeListViewState extends BaseState<AnimeListView> with AnimeListViewMix
                           onTap: () async {
                             await navigateToDetail(data: state.animeList?[index]);
                           },
-                          child: ClipRRect(
-                            borderRadius: context.normalBorderRadius,
-                            child: Image.network(
-                              state.animeList?[index].images?.jpg?.imageUrl ?? '',
-                              filterQuality: FilterQuality.high,
-                              fit: BoxFit.fitWidth,
-                              height: context.width / 2,
-                              width: context.width / 2,
-                              errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
-                                print(state.animeList?[index].images?.jpg);
-                                return const SizedBox.shrink();
-                              },
-                            ),
+                          child: CustomNetworkImage(
+                            path: state.animeList?[index].images?.jpg?.imageUrl ?? '',
+                            fit: BoxFit.fitWidth,
+                            height: context.width / 2,
+                            width: context.width / 2,
                           ),
                         ),
                       ),
@@ -90,34 +87,6 @@ class _AnimeListViewState extends BaseState<AnimeListView> with AnimeListViewMix
           return Text(error);
         }
       },
-    );
-  }
-}
-
-class RatingStar extends StatelessWidget {
-  const RatingStar({
-    super.key,
-    required this.fieldScore,
-  });
-
-  final double fieldScore;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        FillImageWithColor(
-          imageUrl: "assets/icons/star_inactive.svg",
-          fillColor: context.theme.colorScheme.tertiary,
-          percentage: (fieldScore == 0 ? 5 : fieldScore.toInt()) * 20,
-        ),
-        Padding(
-          padding: EdgeInsets.only(left: 4),
-          child: Text(
-            fieldScore == 0 ? "5" : fieldScore.toStringAsFixed(1),
-          ),
-        ),
-      ],
     );
   }
 }

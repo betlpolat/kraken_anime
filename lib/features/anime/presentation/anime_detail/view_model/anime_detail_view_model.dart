@@ -16,9 +16,7 @@ class AnimeDetailViewModel extends BaseCubit<AnimeDetailState> {
 
   ///Fetch Anime detail List
   Future<void> fetchAnimeDetail(int id) async {
-    print(state.onLoad);
     changeLoading();
-    print(state.onLoad);
 
     final response = await NetworkManager.instance!.coreDio!
         .send<AnimeDetail, AnimeDetail>('anime/$id/characters', type: HttpTypes.GET, parseModel: AnimeDetail());
